@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Vegetable Site</title>
+</head>
+
+<body class="bg-slate-200">
+    <script charset="utf-8" src="https://cdn.ethers.io/scripts/ethers-v4.min.js" type="text/javascript">
+    </script>
+
+    <nav class="flex justify-between p-5 bg-slate-500">
+        <span class="ml-5 text-white font-semibold text-3xl">Vegetable Site</span>
+        <ul class="flex justify-end space-x-10 mx-10">
+
+            <li class="cursor-pointer">Buy</li>
+            <li class="cursor-pointer">Sell</li>
+            <li class="cursor-pointer">Report</li>
+        </ul>
+    </nav>
+    <main>
+
+        <div class=" h-96 p-5 mt-16 grid place-items-center">
+            <div class="w-full max-w-xs">
+                <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                    <div class="mb-4">
+
+                        <label for="Good" class="block text-gray-700 text-sm font-bold mb-2">Good Vegetables:</label>
+                        <input type="text" id="Good" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-6">
+                        <label for="Bad" class="block text-gray-700 text-sm font-bold mb-2">Bad Vegetables:</label>
+                        <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="Bad">
+                    </div>
+                    <div class="mb-6">
+                        <label for="Price" class="block text-gray-700 text-sm font-bold mb-2">Price:</label>
+                        <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="Price" >
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <button class="btn btn-light btn-block" onclick="setVeg()" > Deposit </button>
+
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        window.ethereum.enable()
+        var provider = new ethers.providers.Web3Provider(web3.currentProvider, 'ropsten');
+
+        //change this address to that of bank contract    
+        var vegetableContractAddress = "0xFBD3492EEDe44B6a2381a3879FA8b49447D3f831";
+        let vegetableContractABI = [
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getprofit",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "gettotal",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "gettotalprice",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_good",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_bad",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_price",
+				"type": "uint256"
+			}
+		],
+		"name": "setVeg",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
+
+        provider.listAccounts().then(function (accounts) {
+            signer = provider.getSigner(accounts[0]);
+            vegetableContract = new ethers.Contract(vegetableContractAddress, vegetableContractABI, signer);
+        })
+
+
+        async function setVeg() {
+
+            GoodVeg = $("#Good").val();
+            BadVeg = $("#Bad").val();
+            Price = $("#Price").val();
+
+            if (GoodVeg == "") {
+                alert("Please input Number of Good Vegetables");
+            }
+            
+            else {
+                getReport = vegetableContract.setVeg(GoodVeg, BadVeg, Price);
+                await getReport;
+            }
+        }
+    </script>
+
+</body>
+
+</html>
